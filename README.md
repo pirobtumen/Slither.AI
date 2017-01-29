@@ -15,7 +15,7 @@ Click here for install it.
 
 - [x] Find the next food with a cost function.
 - [x] Calculate the new direction in order to go to the objective.
-- [x] Detect nearby enemies and move in the opossite direction. [Have some bug]
+- [x] Detects nearby enemies and moves in the opossite direction. [Have some bug]
 - [x] Draw bot info in the canvas.
 
 ## To-Do List
@@ -23,7 +23,7 @@ Click here for install it.
 - [ ] Food clustering.
 - [ ] Better enemy detection.
 - [ ] Check if the bot is moving in circles.
-- [ ] Check if the objective is hover or behind a snake.
+- [ ] Check if the objective is over or behind a snake.
 - [ ] Override play button click event.
 - [ ] Read keys.
 - [ ] Show visual information.
