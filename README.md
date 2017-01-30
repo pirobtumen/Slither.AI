@@ -7,23 +7,26 @@ In this first version the code is not fully documented because of it may change.
 
 ## Installation
 
-You need an extension, like Tampermonkey for Chrome, and just install the main script.
+You need an extension for your web browser to execute user scripts.
 
-Click here for install it.
+I use Tampermonkey for Chrome.
+
+[Click here for install the script.] (https://github.com/pirobtumen/Slither.AI/raw/master/SlitherAI.user.js "Click to install Slither.AI")
 
 ## Implemented
 
 - [x] Find the next food with a cost function.
 - [x] Calculate the new direction in order to go to the objective.
-- [x] Detects nearby enemies and moves in the opossite direction. [Have some bug]
-- [x] Draw bot info in the canvas.
+- [x] Detects nearby enemies and moves in the opossite direction. It fails sometimes.
+- [x] Draw visual bot info.
 
 ## To-Do List
 
-- [ ] Food clustering.
 - [ ] Better enemy detection.
-- [ ] Check if the bot is moving in circles.
+- [ ] Food clustering.
+- [ ] Better food selection.
 - [ ] Check if the objective is over or behind a snake.
+- [ ] Check if the bot is moving in circles.
 - [ ] Override play button click event.
 - [ ] Read keys.
 - [ ] Show visual information.
