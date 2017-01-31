@@ -257,7 +257,7 @@ function update(){
         if( Math.abs(Math.abs(my_x) - Math.abs(goto_x)) < objective_offset && Math.abs(Math.abs(my_y) - Math.abs(goto_y)) < objective_offset )
             has_objective = false;
 
-        if( Math.abs(direction - 62) < direction_offset) // 62 = 250/4 = 90º
+        if( direction%62 < direction_offset) // 62 = 250/4 = 90º
             has_objective = false;
 
         if(objectiveEaten())
@@ -277,7 +277,6 @@ function update(){
 
         }
 
-        //console.log("DIRECTION:" + direction);
         sendData(direction);
         draw();
 
@@ -419,9 +418,15 @@ function initialize(){
 
 (function() {
     'use strict';
-
-    // TODO: Detect if the page is loaded
-    // TODO: Override play button click event.
-    setTimeout(initialize,1000);
+    
+    var interval_id = setInterval(
+    function(){
+        if ( document.readyState !== 'complete' )
+            return;
+        
+        clearInterval(interval_id);       
+        initialize();
+    }, 100 );
+    
 
 })();
