@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         SlitherAI - Bot
 // @namespace    SlitherAI
-// @version      0.1.2
+// @version      0.1.3
 // @description  Controlling all the snakes!
 // @author       Alberto Sola
 // @match        http://slither.io/
@@ -61,15 +61,18 @@ function disableMouse(){
     window.onmousemove = function(){};
 }
 
+// ----------------------------------------------------------------------------------
+
 function enableMouse(){
     window.onmousemove = capture_mouse;
 }
+
+// ----------------------------------------------------------------------------------
 
 function overridePlayButton(){
     var play_bttn = document.getElementsByClassName("sadg1")[0];
     start_game = play_bttn.onclick;
     play_bttn.onclick = startGame;
-    
 }
 
 // ----------------------------------------------------------------------------------
@@ -143,12 +146,29 @@ function getDirectionScape(){
         Go to the oposite direction if there are near snakes.
         
         [WIP]
-        
-        TODO: Sometimes fails.
     */
-    var angles = [];
+    var angle = 0;
+
+    for(var i = 0; i < near_snakes.length; i++)
+        angle += near_snakes[i].ang;
+
+    angle /= near_snakes.length;
+    
+    return (angle+125)%251;
+
+}
+
+/*
+function getDirectionScape(){
+    /*
+        Go to the oposite direction if there are near snakes.
+        
+        [WIP]
+    /
     var min_angle = 250;
     var max_angle = 0;
+    var max_diff;
+    var min_diff;
 
     for(var i = 0; i < near_snakes.length; i++){
         if(near_snakes[i].ang > max_angle)
@@ -158,9 +178,15 @@ function getDirectionScape(){
 
     }
 
-    return (125 + (max_angle+min_angle)/2)%250;
-}
+    max_diff = Math.abs(direction - max_angle);
+    min_diff = Math.abs(direction - min_angle);
+    
+    if(max_diff > min_diff)
+    
+    
 
+}
+*/
 // ----------------------------------------------------------------------------------
 
 function getDirection(x,y){
@@ -181,7 +207,7 @@ function getDirection(x,y){
 
 // ----------------------------------------------------------------------------------
 
-function get_next_food(){
+function getNextFood(){
     /*
         Set the coordinates of the next objective.
         
@@ -191,27 +217,21 @@ function get_next_food(){
     var my_y = snake.yy;
     var food_x = null;
     var food_y = null;
-    var small_distance;
+    var best_score = 0;
     var next_food_x;
     var next_food_y;
-    var next_distance;
+    var next_score;
 
     // TODO: new angle -> the less the better
     // TODO: new angle -> don't go to danger zone
-    if(foods.length > 0){
-        food_x = foods[0].xx;
-        food_y = foods[0].yy;
-        small_distance = foods[0].sz*foods[0].sz / getDistance(my_x,my_y,food_x,food_y);
-    }
-
-    for(var i = 1; i < foods.length; i++){
+    for(var i = 0; i < foods.length; i++){
         if( foods[i] !== null && goto_x != foods[i].xx && goto_y != foods[i].yy){
             next_food_x = foods[i].xx;
             next_food_y = foods[i].yy;
-            next_distance = foods[i].sz*foods[i].sz / (getDistance(my_x,my_y,next_food_x,next_food_y) + Math.abs(direction - getDirection(my_x,my_y,next_food_x,next_food_y)));
+            next_score = foods[i].sz*foods[i].sz / (getDistance(my_x,my_y,next_food_x,next_food_y) + Math.abs(direction - getDirection(my_x,my_y,next_food_x,next_food_y)));
 
-            if(next_distance > small_distance){
-                small_distance = next_distance;
+            if(next_score > best_score){
+                best_score = next_score;
                 food_x = next_food_x;
                 food_y = next_food_y;
             }
@@ -271,11 +291,11 @@ function update(){
         }
         else{
             if(!has_objective){
-                get_next_food();
+                getNextFood();
                 has_objective = true;
             }
+            
             direction = getDirection(goto_x,goto_y);
-
         }
 
         sendData(direction);
