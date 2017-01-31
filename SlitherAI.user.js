@@ -82,8 +82,6 @@ function startGame(){
     /*
         Start the game.
     */
-    //document.getElementById("playh").children[0].click();
-    
     bot_enabled = true;
     console.log("STARTING");
 
@@ -147,46 +145,27 @@ function getDirectionScape(){
         
         [WIP]
     */
-    var angle = 0;
-
-    for(var i = 0; i < near_snakes.length; i++)
-        angle += near_snakes[i].ang;
-
-    angle /= near_snakes.length;
-    
-    return (angle+125)%251;
-
-}
-
-/*
-function getDirectionScape(){
-    /*
-        Go to the oposite direction if there are near snakes.
-        
-        [WIP]
-    /
-    var min_angle = 250;
-    var max_angle = 0;
-    var max_diff;
-    var min_diff;
+    var diff;
+    var left = 0;
+    var right = 0;
 
     for(var i = 0; i < near_snakes.length; i++){
-        if(near_snakes[i].ang > max_angle)
-            max_angle = near_snakes[i].ang;
-        else if(near_snakes[i].ang < min_angle)
-            min_angle = near_snakes[i].ang;
-
+        diff = (near_snakes[i].ang - direction + 250) % 250;
+        
+        if(diff > 125)
+            left += 5*(1-near_snakes[i].dst/front_radius);
+        else
+            right += 5*(1-near_snakes[i].dst/front_radius);
     }
-
-    max_diff = Math.abs(direction - max_angle);
-    min_diff = Math.abs(direction - min_angle);
+        
+    if(left > right)
+        return (direction + left) % 250;
     
-    if(max_diff > min_diff)
+    else
+        return (direction - right + 250) % 250;
     
-    
-
 }
-*/
+
 // ----------------------------------------------------------------------------------
 
 function getDirection(x,y){
@@ -323,7 +302,8 @@ function searchSnakes(){
         Search for points inside an area (enemy_radius).
     */
     var distance;
-    var enemy_pos_angle;
+    var enemy_angle_rad;
+    var enemy_angle;
     near_snakes = [];
     
     // TODO: Check null elements
@@ -334,10 +314,11 @@ function searchSnakes(){
             
             if(!snakes[i].pts[j].dying){
                 
-                enemy_pos_angle = getDirection(snakes[i].pts[j].xx,snakes[i].pts[j].yy) * 2 * Math.PI / 250; 
+                enemy_angle = getDirection(snakes[i].pts[j].xx,snakes[i].pts[j].yy);
+                enemy_angle_rad = enemy_angle * 2 * Math.PI / 250;
                 
-                if(distance <= front_radius && enemy_pos_angle < snake.ang + front_angle && enemy_pos_angle > snake.ang - front_angle)
-                    near_snakes.push({x:snakes[i].pts[j].xx,y:snakes[i].pts[j].yy,ang: enemy_pos_angle});
+                if(distance <= front_radius && enemy_angle_rad < snake.ang + front_angle && enemy_angle_rad > snake.ang - front_angle)
+                    near_snakes.push({x:snakes[i].pts[j].xx,y:snakes[i].pts[j].yy,ang: enemy_angle,dst:distance});
                 
             }
                 
