@@ -22,7 +22,7 @@ var UPDATE_INTERVAL = 60;
 var bot_name = "Slither.AI";
 var bot_enabled = true;
 var mouse_enabled = true;
-var nick_input_id = "nick_holder";
+var nick_input_id = "nick";
 
 // ----------------------------------------------------------------------------------
 
@@ -35,7 +35,10 @@ var goto_x = 0;
 var goto_y = 0;
 var has_objective = false;
 
-var enemy_radius = 150;
+// TODO: set game coordinates -> convert when drawing
+var front_radius = 300;
+var side_radius = 100;
+var front_angle = Math.PI/4;
 var near_snakes = [];
 
 var scape_mode = false;
@@ -63,6 +66,7 @@ function enableMouse(){
 
 // ----------------------------------------------------------------------------------
 
+/// TODO: Override Play Button
 function startGame(){
     /*
         Start the game.
@@ -87,11 +91,10 @@ function setNick(nick){
 
 // ----------------------------------------------------------------------------------
 
+// TODO: Search how it works.
 function sendData(data){
     /*
         Send data to the server.
-        
-        TODO: Search how it works.
     */
     var packet = new Uint8Array(1);
     packet[0] = data;
@@ -110,6 +113,8 @@ function getDistance(a,b,c,d){
     return Math.sqrt(x*x+y*y);
 }
 
+// ----------------------------------------------------------------------------------
+
 function radToGameAngle(angle){
     var new_direction;
 
@@ -120,6 +125,8 @@ function radToGameAngle(angle){
 
     return Math.round(new_direction);
 }
+
+// ----------------------------------------------------------------------------------
 
 function getDirectionScape(){
     /*
@@ -135,7 +142,7 @@ function getDirectionScape(){
 
     var i;
     for(i = 0; i < near_snakes.length; i++){
-        angles.push(getDirection(near_snakes[i].x,near_snakes[i].y));
+        angles.push(near_snakes[i].ang);
     }
 
     min_angle = max_angle = angles[0];
@@ -150,6 +157,8 @@ function getDirectionScape(){
 
     return (125 + (max_angle+min_angle)/2)%250;
 }
+
+// ----------------------------------------------------------------------------------
 
 function getDirection(x,y){
     /*
@@ -227,6 +236,8 @@ function objectiveEaten(){
     return !eaten;
 }
 
+// ----------------------------------------------------------------------------------
+
 function update(){
     /*
         Main function.
@@ -272,6 +283,8 @@ function update(){
     }
 }
 
+// ----------------------------------------------------------------------------------
+
 function drawLine(ctx,start_x,start_y,end_x,end_y){
     /*
         Draw a line in a canvas context.
@@ -281,18 +294,41 @@ function drawLine(ctx,start_x,start_y,end_x,end_y){
     ctx.stroke();
 }
 
+// ----------------------------------------------------------------------------------
+
 function searchSnakes(){
     /*
         Search for points inside an area (enemy_radius).
     */
+    var distance;
+    var enemy_pos_angle;
     near_snakes = [];
+    
     // TODO: Check null elements
     for(var i = 0; i < snakes.length - 1; i++){ // Our snake is the last one
         for(var j = 0; j < snakes[i].pts.length; j++){ // There are some hidden points -> "dying = true"
-            if(!snakes[i].pts[j].dying && getDistance(snake.xx,snake.yy,snakes[i].pts[j].xx,snakes[i].pts[j].yy) <= enemy_radius)
-                near_snakes.push({x:snakes[i].pts[j].xx,y:snakes[i].pts[j].yy});
+            
+            distance = getDistance(snake.xx,snake.yy,snakes[i].pts[j].xx,snakes[i].pts[j].yy);
+            
+            if(!snakes[i].pts[j].dying){
+                
+                enemy_pos_angle = getDirection(snakes[i].pts[j].xx,snakes[i].pts[j].yy) * 2 * Math.PI / 250; 
+                
+                if(distance <= front_radius && enemy_pos_angle < snake.ang + front_angle && enemy_pos_angle > snake.ang - front_angle)
+                    near_snakes.push({x:snakes[i].pts[j].xx,y:snakes[i].pts[j].yy,ang: enemy_pos_angle});
+                
+                else if(distance <= side_radius
+                        && ((enemy_pos_angle > snake.ang - 3*front_angle && enemy_pos_angle < snake.ang - front_angle)
+                        || (enemy_pos_angle < snake.ang + 3*front_angle && enemy_pos_angle > snake.ang + front_angle)))
+                    near_snakes.push({x:snakes[i].pts[j].xx,y:snakes[i].pts[j].yy,ang: enemy_pos_angle});
+
+                
+            }
+                
         }
     }
+    
+    //console.log(near_snakes.length);
 
     if(near_snakes.length > 0 )
         scape_mode = true;
@@ -300,6 +336,8 @@ function searchSnakes(){
         scape_mode = false;
 
 }
+
+// ----------------------------------------------------------------------------------
 
 function draw(){
     /*
@@ -329,12 +367,26 @@ function draw(){
     context.lineWidth = 2;
     context.strokeStyle = "white";
     drawLine(context,mid_x,mid_y,obj_x+5,obj_y+5);
-
+    
     context.beginPath();
-    context.strokeStyle = "red";
-    context.fillStyle = "red";
-
-    context.arc(mid_x,mid_y,enemy_radius,0,2*Math.PI);
+    context.moveTo(mid_x,mid_y);
+    context.strokeStyle = "blue";
+    context.arc(mid_x,mid_y,front_radius, snake.ang - front_angle, snake.ang + front_angle);
+    context.lineTo(mid_x,mid_y);
+    context.stroke();
+    
+    context.beginPath();
+    context.moveTo(mid_x,mid_y);
+    context.strokeStyle = "green";
+    context.arc(mid_x,mid_y,side_radius, snake.ang + front_angle, snake.ang + 3*front_angle);
+    context.lineTo(mid_x,mid_y);
+    context.stroke();
+    
+    context.beginPath();
+    context.moveTo(mid_x,mid_y);
+    context.strokeStyle = "green";
+    context.arc(mid_x,mid_y,side_radius, snake.ang - 3*front_angle, snake.ang - front_angle);
+    context.lineTo(mid_x,mid_y);
     context.stroke();
 
 
@@ -358,8 +410,6 @@ function draw(){
 }
 
 // ----------------------------------------------------------------------------------
-// MAIN
-// ----------------------------------------------------------------------------------
 
 function initialize(){
     // Save game functions
@@ -376,10 +426,15 @@ function initialize(){
     startGame();
 }
 
+// ----------------------------------------------------------------------------------
+// MAIN
+// ----------------------------------------------------------------------------------
+
+
 (function() {
     'use strict';
 
-    // TODO: Detect page is loaded
+    // TODO: Detect if the page is loaded
     // TODO: Override play button click event.
     setTimeout(initialize,1000);
 
