@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         SlitherAI - Bot
 // @namespace    SlitherAI
-// @version      0.1.1
+// @version      0.1.2
 // @description  Controlling all the snakes!
 // @author       Alberto Sola
 // @match        http://slither.io/
@@ -45,6 +45,7 @@ var scape_mode = false;
 // ----------------------------------------------------------------------------------
 
 var game_redraw = null;
+var start_game = null;
 var capture_mouse = null;
 
 // ----------------------------------------------------------------------------------
@@ -63,6 +64,13 @@ function enableMouse(){
     window.onmousemove = capture_mouse;
 }
 
+function overridePlayButton(){
+    var play_bttn = document.getElementsByClassName("sadg1")[0];
+    start_game = play_bttn.onclick;
+    play_bttn.onclick = startGame;
+    
+}
+
 // ----------------------------------------------------------------------------------
 
 /// TODO: Override Play Button
@@ -70,11 +78,13 @@ function startGame(){
     /*
         Start the game.
     */
-    document.getElementById("playh").children[0].click();
+    //document.getElementById("playh").children[0].click();
+    
     bot_enabled = true;
     console.log("STARTING");
 
     // Wait until the conexion is stablished
+    start_game();
     setTimeout(update,1000);
 }
 
@@ -394,6 +404,7 @@ function initialize(){
     // Update game function
     //disableMouse();
     disableDrawing();
+    overridePlayButton();
 
     // Update data
     setNick(bot_name);
