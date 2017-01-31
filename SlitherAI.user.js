@@ -23,6 +23,7 @@ var bot_name = "Slither.AI";
 var bot_enabled = true;
 var mouse_enabled = true;
 var nick_input_id = "nick";
+var autoplay = false;
 
 // ----------------------------------------------------------------------------------
 
@@ -407,8 +408,10 @@ function initialize(){
 
     // Update data
     setNick(bot_name);
-
-    startGame();
+    
+    // Start the game
+    if(autoplay)
+        startGame();
 }
 
 // ----------------------------------------------------------------------------------
