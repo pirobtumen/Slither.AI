@@ -253,7 +253,8 @@ function update(){
 
         var my_x = snake.xx;
         var my_y = snake.yy;
-
+        
+        /*
         if( Math.abs(Math.abs(my_x) - Math.abs(goto_x)) < objective_offset && Math.abs(Math.abs(my_y) - Math.abs(goto_y)) < objective_offset )
             has_objective = false;
 
@@ -262,6 +263,7 @@ function update(){
 
         if(objectiveEaten())
             has_objective = false;
+        */
 
         searchSnakes();
 
@@ -269,10 +271,10 @@ function update(){
             direction = getDirectionScape();
         }
         else{
-            if(!has_objective){
+            //if(!has_objective){
                 getNextFood();
-                has_objective = true;
-            }
+            //    has_objective = true;
+            //}
             
             direction = getDirection(goto_x,goto_y);
         }
