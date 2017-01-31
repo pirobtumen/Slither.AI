@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         SlitherAI - Bot
 // @namespace    SlitherAI
-// @version      0.1
+// @version      0.1.1
 // @description  Controlling all the snakes!
 // @author       Alberto Sola
 // @match        http://slither.io/
