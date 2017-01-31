@@ -36,9 +36,8 @@ var goto_y = 0;
 var has_objective = false;
 
 // TODO: set game coordinates -> convert when drawing
-var front_radius = 300;
-var side_radius = 100;
-var front_angle = Math.PI/4;
+var front_radius = 150;
+var front_angle = Math.PI/1.5;
 var near_snakes = [];
 
 var scape_mode = false;
@@ -137,21 +136,14 @@ function getDirectionScape(){
         TODO: Sometimes fails.
     */
     var angles = [];
-    var min_angle;
-    var max_angle;
+    var min_angle = 250;
+    var max_angle = 0;
 
-    var i;
-    for(i = 0; i < near_snakes.length; i++){
-        angles.push(near_snakes[i].ang);
-    }
-
-    min_angle = max_angle = angles[0];
-
-    for(j = 0; i < angles.length; i++){
-        if(angles[i] > max_angle)
-            max_angle = angles[i];
-        else if(angles[i] < min_angle)
-            min_angle = angles[i];
+    for(var i = 0; i < near_snakes.length; i++){
+        if(near_snakes[i].ang > max_angle)
+            max_angle = near_snakes[i].ang;
+        else if(near_snakes[i].ang < min_angle)
+            min_angle = near_snakes[i].ang;
 
     }
 
@@ -317,12 +309,6 @@ function searchSnakes(){
                 if(distance <= front_radius && enemy_pos_angle < snake.ang + front_angle && enemy_pos_angle > snake.ang - front_angle)
                     near_snakes.push({x:snakes[i].pts[j].xx,y:snakes[i].pts[j].yy,ang: enemy_pos_angle});
                 
-                else if(distance <= side_radius
-                        && ((enemy_pos_angle > snake.ang - 3*front_angle && enemy_pos_angle < snake.ang - front_angle)
-                        || (enemy_pos_angle < snake.ang + 3*front_angle && enemy_pos_angle > snake.ang + front_angle)))
-                    near_snakes.push({x:snakes[i].pts[j].xx,y:snakes[i].pts[j].yy,ang: enemy_pos_angle});
-
-                
             }
                 
         }
@@ -370,22 +356,11 @@ function draw(){
     
     context.beginPath();
     context.moveTo(mid_x,mid_y);
-    context.strokeStyle = "blue";
-    context.arc(mid_x,mid_y,front_radius, snake.ang - front_angle, snake.ang + front_angle);
-    context.lineTo(mid_x,mid_y);
-    context.stroke();
-    
-    context.beginPath();
-    context.moveTo(mid_x,mid_y);
-    context.strokeStyle = "green";
-    context.arc(mid_x,mid_y,side_radius, snake.ang + front_angle, snake.ang + 3*front_angle);
-    context.lineTo(mid_x,mid_y);
-    context.stroke();
-    
-    context.beginPath();
-    context.moveTo(mid_x,mid_y);
-    context.strokeStyle = "green";
-    context.arc(mid_x,mid_y,side_radius, snake.ang - 3*front_angle, snake.ang - front_angle);
+    if(scape_mode)
+        context.strokeStyle = "red";
+    else
+        context.strokeStyle = "green";
+    context.arc(mid_x,mid_y,front_radius*window.gsc, snake.ang - front_angle, snake.ang + front_angle);
     context.lineTo(mid_x,mid_y);
     context.stroke();
 
