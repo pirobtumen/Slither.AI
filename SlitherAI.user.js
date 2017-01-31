@@ -22,6 +22,7 @@ var UPDATE_INTERVAL = 60;
 var bot_name = "Slither.AI";
 var bot_enabled = true;
 var mouse_enabled = true;
+var nick_input_id = "nick_holder";
 
 // ----------------------------------------------------------------------------------
 
@@ -80,7 +81,7 @@ function setNick(nick){
     /*
         Set the bot nick in the input field.
     */
-    var nick_input = document.getElementById("nick");
+    var nick_input = document.getElementById(nick_input_id);
     nick_input.setAttribute("value", nick);
 }
 
@@ -311,8 +312,8 @@ function draw(){
     var mid_y = window.mc.height/2;
     var my_x = snake.xx;
     var my_y = snake.yy;
-    var obj_x = Math.round(goto_x - my_x + mid_x);
-    var obj_y = Math.round(goto_y - my_y + mid_y);
+    var obj_x = Math.round((goto_x - my_x)*window.gsc + mid_x);
+    var obj_y = Math.round((goto_y - my_y)*window.gsc + mid_y);
 
     context.save();
     //context.globalAlpha = 1;
@@ -341,8 +342,8 @@ function draw(){
         context.beginPath();
         context.strokeStyle = "red";
         context.fillStyle = "red";
-        obj_x = Math.round(near_snakes[i].x - my_x + mid_x);
-        obj_y = Math.round(near_snakes[i].y - my_y + mid_y);
+        obj_x = Math.round((near_snakes[i].x - my_x)*window.gsc + mid_x);
+        obj_y = Math.round((near_snakes[i].y - my_y)*window.gsc + mid_y);
 
         context.rect(obj_x, obj_y, 10,10);
         context.stroke();
