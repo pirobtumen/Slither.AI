@@ -37,7 +37,7 @@ var goto_y = 0;
 var has_objective = false;
 
 // TODO: set game coordinates -> convert when drawing
-var front_radius = 150;
+var front_radius = 200;
 var front_angle = Math.PI/1.5;
 var near_snakes = [];
 
@@ -148,16 +148,20 @@ function getDirectionScape(){
     var diff;
     var left = 0;
     var right = 0;
+    var dist;
 
     for(var i = 0; i < near_snakes.length; i++){
         diff = (near_snakes[i].ang - direction + 250) % 250;
-        
+        dist = (1-near_snakes[i].dst/front_radius)*10;
+
         if(diff > 125)
-            left += 5*(1-near_snakes[i].dst/front_radius);
+            left += dist;
+            
         else
-            right += 5*(1-near_snakes[i].dst/front_radius);
-    }
+            right += dist;
         
+    }
+    
     if(left > right)
         return (direction + left) % 250;
     
